@@ -39,7 +39,19 @@ namespace BattleShipCS
             //playerShip1 = PlaceBoats(isVertical: true); //Using Named arguments
             try
             {
-                PlaceBoats(Position.Vertical); //Using enum
+                /*if (playerShip == 0)
+                {*/
+                PlaceBoats();
+                Console.WriteLine($"value for playership : {playerShip}");
+                MessageBox.Show("Welcome to Battleship! Please start by positioning your 3 boats : 1st one will be vertical, the next 2 will be horizontal.");
+                /*}
+                else if (playerShip < 3)
+                {*/
+                /*PlaceBoats(Position.Horizontal);
+                Console.WriteLine($"value for playership : {playerShip}");
+                PlaceBoats(Position.Horizontal);*/
+                //}
+                //Using enum
                 /*playerShip2 = PlaceBoats(Position.Horizontal);
                 playerShip3 = PlaceBoats(Position.Horizontal);*/
             }
@@ -62,19 +74,98 @@ namespace BattleShipCS
             foreach (var (tile, index) in playerBoard.Select((Name, index) => (Name, index)))
             {
                 /*tile.MouseHover += (sender, EventArgs) => { Tile_MouseHover(sender, EventArgs, position); };*/
-                tile.Click += (sender, EventArgs) => { Place_Boat(sender, EventArgs, position); };
+                /*if (position == Position.Vertical)
+
+                {*/
+                tile.Click += Place_Boat;
+                tile.MouseHover += Tile_MouseHover;
+                //tile.MouseEnter += Tile_MouseEnter;
+                //tile.MouseMove += Tile_MouseMove;
+                tile.MouseLeave += Tile_MouseLeave;
+                /*if (index < 90)
+                {
+                    tile.Click += (sender, EventArgs) => { Place_Boat(sender, EventArgs, Position.Vertical); };
+                }
+
+                *//*}*/
+                /*else if (position == Position.Horizontal)
+                {*//*
+                if (index % 10 < 9)
+                {
+                    tile.Click += (sender, EventArgs) => { Place_Boat(sender, EventArgs, Position.Horizontal); };
+                }*/
+
                 //return index;
+                /*}*/
+                //return -1;
+                //return index;
+                /*else if (position == Position.Horizontal)
+                {
+                    return index, index + 1;
+                }*/
             }
-            return -1;
-            //return index;
-            /*else if (position == Position.Horizontal)
+        }
+
+        private void Tile_MouseEnter(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Tile_MouseLeave(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            var tile = sender as PictureBox;
+            var index = Array.IndexOf(playerBoard, tile);
+
+            if (playerShip == 0)
             {
-                return index, index + 1;
-            }*/
+                if (index >= 0 && index < 90)
+                {
+                    /*tile.Size = new Size(45, 90);
+                    tile.Image = Properties.Resources.boatVert;*/
+                    playerBoard[index].Image = Properties.Resources.water;
+                    playerBoard[index + 10].Image = Properties.Resources.water;
+                }
+            }
+            else
+            {
+                /*tile.Size = new Size(90, 45);
+                tile.Image = Properties.Resources.boat;*/
+                playerBoard[index].Image = Properties.Resources.water;
+                playerBoard[index + 1].Image = Properties.Resources.water;
+            }
 
         }
 
-        public void Place_Boat(object sender, EventArgs e, Position position)
+        private void Tile_MouseMove(object sender, MouseEventArgs e)
+        {
+            //throw new NotImplementedException();
+            var tile = sender as PictureBox;
+            var index = Array.IndexOf(playerBoard, tile);
+            /*if (tile.Image == Properties.Resources.water)
+            {*/
+            Console.WriteLine(index);
+            if (playerShip == 0)
+            {
+                if (index >= 0 && index < 90)
+                {
+                    /*tile.Size = new Size(45, 90);
+                    tile.Image = Properties.Resources.boatVert;*/
+                    playerBoard[index].Image = Properties.Resources.boatTop;
+                    playerBoard[index + 10].Image = Properties.Resources.boatBottom;
+                }
+            }
+            else
+            {
+                tile.Size = new Size(90, 45);
+                tile.Image = Properties.Resources.boat;
+            }
+
+            /*}*/
+
+        }
+
+        public void Place_Boat(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
 
@@ -82,12 +173,19 @@ namespace BattleShipCS
             Console.WriteLine($"index {index} on playerBoard");
             if (position == Position.Vertical)
             {
+                /*if (position == Position.Vertical)
+                {*/
+                //After click, add image then remove all events.
                 if (index < 90)
                 {
                     playerBoard[index].Image = Properties.Resources.boatTop;
                     playerBoard[index + 10].Image = Properties.Resources.boatBottom;
                     playerShots[index] = "b";
                     playerShots[index + 10] = "b";
+                    playerBoard[index].MouseHover -= Tile_MouseHover;
+                    playerBoard[index + 10].MouseHover -= Tile_MouseHover;
+                    playerBoard[index].MouseLeave -= Tile_MouseLeave;
+                    playerBoard[index + 10].MouseLeave -= Tile_MouseLeave;
 
                 }
                 else
@@ -98,32 +196,103 @@ namespace BattleShipCS
             }
             else if (position == Position.Horizontal)
             {
-                playerBoard[index].Image = Properties.Resources.boatTop;
-                playerBoard[index + 1].Image = Properties.Resources.boatBottom;
-                playerShots[index] = "b";
-                playerShots[index + 1] = "b";
-            }
-            ///return index;
-        }
-
-        /*        public void Tile_MouseHover(object sender, EventArgs e, Position position)
+                /*if (position == Position.Horizontal)
+                {*/
+                if (index % 10 < 9)
                 {
-                    //throw new NotImplementedException();
-                    int index = Array.IndexOf(playerShots, sender);
-                    if (index >= 0 && index < 90)
-                    {
-                        if (position == Position.Vertical)
-                        {
-                            playerBoard[index].Image = Properties.Resources.boatTop;
-                            playerBoard[index + 10].Image = Properties.Resources.boatBottom;
-
-                        }
-                        Console.WriteLine($"index : {index}");
-                    }
+                    playerBoard[index].Image = Properties.Resources.boatLeft;
+                    playerBoard[index + 1].Image = Properties.Resources.boatRight;
+                    playerShots[index] = "b";
+                    playerShots[index + 1] = "b";
+                    playerBoard[index].MouseHover -= Tile_MouseHover;
+                    playerBoard[index + 1].MouseHover -= Tile_MouseHover;
+                    playerBoard[index].MouseLeave -= Tile_MouseLeave;
+                    playerBoard[index + 1].MouseLeave -= Tile_MouseLeave;
+                }
+                else
+                {
+                    MessageBox.Show("Please position your horizontal boat in the allowed tiles");
+                    return;
 
                 }
+                /*}*/
+                /*inRange = false;
+                throw new IndexOutOfRangeException("The vertical boat won't fit. Play stay in a higher range");*/
+            }
+            if (playerShip == 2)
+            {
+                //exit the click events on the player board
+                MessageBox.Show("Now the computer will place it's boats.");
+                RemoveClicksOnPlayerBoard();
+                LoadRest();
+                turn = 0;
+                //load rest of the form.
+            }
+            ///return index;
+            playerShip++;
 
-        */
+        }
+
+        public void Tile_MouseHover(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+            var tile = sender as PictureBox;
+            var index = Array.IndexOf(playerBoard, sender);
+            if (playerShip == 0)
+            {
+                if (playerShip == 0)
+                {
+                    if (index >= 0 && index < 90)
+                    {
+                        /*tile.Size = new Size(45, 90);
+                        tile.Image = Properties.Resources.boatVert;*/
+                        playerBoard[index].Image = Properties.Resources.boatTop;
+                        playerBoard[index + 10].Image = Properties.Resources.boatBottom;
+                    }
+                }
+                Console.WriteLine($"index : {index}");
+            }
+            else if (playerShip <= 2)
+            {
+
+                if (index % 10 < 9)
+                {
+                    playerBoard[index].Image = Properties.Resources.boatLeft;
+                    playerBoard[index + 1].Image = Properties.Resources.boatRight;
+                    //tile.Image = Properties.Resources.boat;
+                }
+
+
+            }
+        }
+
+        public void RemoveClicksOnPlayerBoard()
+        {
+            foreach (var tile in playerBoard)
+            {
+                //tile.Size = new Size(45, 45);
+                tile.Click -= Place_Boat;
+                tile.MouseLeave -= Tile_MouseLeave;
+                tile.MouseMove -= Tile_MouseMove;
+                tile.MouseHover -= Tile_MouseHover;
+            }
+        }
+
+        public void LoadRest()
+        {
+            RandomAssignments();
+            foreach (var (tile, index) in computerBoard.Select((Name, index) => (Name, index)))
+            {
+                tile.Cursor = Cursors.Hand;
+                tile.Click += Tile_Click;
+            }
+            if (turn == 0)
+            {
+                MessageBox.Show("The game can start! Please select the tiles on the computer side to try to hit the Computers' boats!");
+            }
+
+
+        }
         public void WinCheck(string[] board)
         {
             int counter = 0;
@@ -136,7 +305,16 @@ namespace BattleShipCS
             }
             if (counter == 6)
             {
-                MessageBox.Show("Game over!");
+                DialogResult dr = MessageBox.Show("Game over! Would you like to play again?", "Game Over", MessageBoxButtons.YesNo);
+                if (dr == DialogResult.Yes)
+                {
+                    //Form1_Load(null, EventArgs.Empty);
+                    Application.Restart();
+                }
+                else
+                {
+                    Close();
+                }
             }
         }
 
@@ -160,10 +338,42 @@ namespace BattleShipCS
             }
             else if (computerShots[index] == "m")
             {
-                MessageBox.Show("This target was already missed. Try another");
+                MessageBox.Show("This target was already missed!");
             }
 
             WinCheck(computerShots);
+            turn++;
+            //commputer's turn
+            if (turn % 2 == 1)
+            {
+                ComputerTurn();
+            }
+        }
+
+        public void ComputerTurn()
+        {
+            MessageBox.Show("The computer will play!");
+            Random rdm = new Random();
+            int compTarget = rdm.Next(0, playerShots.Length);
+            if (playerShots[compTarget] == "e")
+            {
+                playerShots[compTarget] = "m"; //for miss
+                playerBoard[compTarget].Image = Properties.Resources.splash;
+            }
+            else if (playerShots[compTarget] == "b") //for boat
+            {
+                playerShots[compTarget] = "h";
+                playerBoard[compTarget].Image = Properties.Resources.hit;
+                MessageBox.Show("Target hit!");
+            }
+            else if (playerShots[compTarget] == "m")
+            {
+                ComputerTurn();
+            }
+
+            WinCheck(playerShots);
+            turn++;
+
         }
 
         public void PrintBoard()

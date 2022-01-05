@@ -63,6 +63,16 @@ namespace BattleShipCS.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap boat {
+            get {
+                object obj = ResourceManager.GetObject("boat", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap boatBottom {
             get {
                 object obj = ResourceManager.GetObject("boatBottom", resourceCulture);
@@ -96,6 +106,16 @@ namespace BattleShipCS.Properties {
         internal static System.Drawing.Bitmap boatTop {
             get {
                 object obj = ResourceManager.GetObject("boatTop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap boatVert {
+            get {
+                object obj = ResourceManager.GetObject("boatVert", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
