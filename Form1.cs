@@ -27,6 +27,7 @@ namespace BattleShipCS
         public enum Position { Vertical, Horizontal };
         Position position;
         bool inRange = true;
+        int playerShip = 0;
 
         public Form1()
         {
@@ -68,7 +69,7 @@ namespace BattleShipCS
                 tile.Click += Tile_Click;
             }
         }
-        public void PlaceBoats(Position position)
+        public void PlaceBoats()
         {
 
             foreach (var (tile, index) in playerBoard.Select((Name, index) => (Name, index)))
