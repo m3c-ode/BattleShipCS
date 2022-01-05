@@ -20,14 +20,11 @@ namespace BattleShipCS
         List<int> pShotsAvailable = Enumerable.Range(0, 100).ToList();
         List<int> cShotsAvailable = Enumerable.Range(0, 100).ToList();
         List<int> positionsAvailable = Enumerable.Range(0, 100).ToList();
-        int playerShip1, playerShip2, playerShip3;
+        //int playerShip1, playerShip2, playerShip3;
         int computerShip1, computerShip2, computerShip3;
         int turn = 0;
-        bool isVertical;
         public enum Position { Vertical, Horizontal };
-        Position position;
-        bool inRange = true;
-        int playerShip = 0;
+        int playerShip; //counter for the number of ships positionned by player
 
         public Form1()
         {
@@ -62,12 +59,7 @@ namespace BattleShipCS
             }
 
 
-            RandomAssignments();
-            foreach (var (tile, index) in computerBoard.Select((Name, index) => (Name, index)))
-            {
-                tile.Cursor = Cursors.Hand;
-                tile.Click += Tile_Click;
-            }
+
         }
         public void PlaceBoats()
         {
@@ -107,11 +99,6 @@ namespace BattleShipCS
             }
         }
 
-        private void Tile_MouseEnter(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         private void Tile_MouseLeave(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
@@ -122,18 +109,26 @@ namespace BattleShipCS
             {
                 if (index >= 0 && index < 90)
                 {
-                    /*tile.Size = new Size(45, 90);
-                    tile.Image = Properties.Resources.boatVert;*/
-                    playerBoard[index].Image = Properties.Resources.water;
-                    playerBoard[index + 10].Image = Properties.Resources.water;
+
+                    if (playerShots[index] != "b")
+                    {
+                        /*tile.Size = new Size(45, 90);
+                        tile.Image = Properties.Resources.boatVert;*/
+                        playerBoard[index].Image = Properties.Resources.water;
+                        playerBoard[index + 10].Image = Properties.Resources.water;
+                    }
                 }
             }
             else
             {
-                /*tile.Size = new Size(90, 45);
-                tile.Image = Properties.Resources.boat;*/
-                playerBoard[index].Image = Properties.Resources.water;
-                playerBoard[index + 1].Image = Properties.Resources.water;
+
+                if (playerShots[index] != "b" && playerShots[index + 1] != "b")
+                {
+                    /*tile.Size = new Size(90, 45);
+                    tile.Image = Properties.Resources.boat;*/
+                    playerBoard[index].Image = Properties.Resources.water;
+                    playerBoard[index + 1].Image = Properties.Resources.water;
+                }
             }
 
         }
@@ -166,13 +161,14 @@ namespace BattleShipCS
 
         }
 
+
         public void Place_Boat(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
 
             int index = Array.IndexOf(playerBoard, sender);
             Console.WriteLine($"index {index} on playerBoard");
-            if (position == Position.Vertical)
+            if (playerShip == 0)
             {
                 /*if (position == Position.Vertical)
                 {*/
@@ -191,11 +187,11 @@ namespace BattleShipCS
                 }
                 else
                 {
-                    inRange = false;
-                    throw new IndexOutOfRangeException("The vertical boat won't fit. Play stay in a higher range");
+                    MessageBox.Show("Please position your vertical boat in the allowed tiles");
+                    return;
                 }
             }
-            else if (position == Position.Horizontal)
+            else if (playerShip <= 2)
             {
                 /*if (position == Position.Horizontal)
                 {*/
@@ -241,29 +237,33 @@ namespace BattleShipCS
             var index = Array.IndexOf(playerBoard, sender);
             if (playerShip == 0)
             {
-                if (playerShip == 0)
+
+                if (index >= 0 && index < 90)
                 {
-                    if (index >= 0 && index < 90)
+                    if (playerShots[index] != "b")
                     {
                         /*tile.Size = new Size(45, 90);
                         tile.Image = Properties.Resources.boatVert;*/
                         playerBoard[index].Image = Properties.Resources.boatTop;
                         playerBoard[index + 10].Image = Properties.Resources.boatBottom;
                     }
+
                 }
-                Console.WriteLine($"index : {index}");
+                Console.WriteLine($"index hover : {index}");
             }
             else if (playerShip <= 2)
             {
 
                 if (index % 10 < 9)
                 {
-                    playerBoard[index].Image = Properties.Resources.boatLeft;
-                    playerBoard[index + 1].Image = Properties.Resources.boatRight;
-                    //tile.Image = Properties.Resources.boat;
+                    if (playerShots[index] != "b" && playerShots[index + 1] != "b")
+                    {
+                        playerBoard[index].Image = Properties.Resources.boatLeft;
+                        playerBoard[index + 1].Image = Properties.Resources.boatRight;
+                        //tile.Image = Properties.Resources.boat;
+                    }
+
                 }
-
-
             }
         }
 
@@ -274,7 +274,7 @@ namespace BattleShipCS
                 //tile.Size = new Size(45, 45);
                 tile.Click -= Place_Boat;
                 tile.MouseLeave -= Tile_MouseLeave;
-                tile.MouseMove -= Tile_MouseMove;
+                //tile.MouseMove -= Tile_MouseMove;
                 tile.MouseHover -= Tile_MouseHover;
             }
         }
@@ -347,13 +347,15 @@ namespace BattleShipCS
             //commputer's turn
             if (turn % 2 == 1)
             {
+                MessageBox.Show("The computer will play!");
                 ComputerTurn();
+                turn++;
             }
         }
 
         public void ComputerTurn()
         {
-            MessageBox.Show("The computer will play!");
+
             Random rdm = new Random();
             int compTarget = rdm.Next(0, playerShots.Length);
             if (playerShots[compTarget] == "e")
@@ -373,7 +375,7 @@ namespace BattleShipCS
             }
 
             WinCheck(playerShots);
-            turn++;
+
 
         }
 
@@ -441,6 +443,7 @@ namespace BattleShipCS
                 computerShots[ship] = "b";
                 computerBoard[ship + 1].Image = Properties.Resources.boatRight;
                 computerShots[ship + 1] = "b";
+                HideComputerBoats(ship, Position.Horizontal);
                 return positionsAvailable[ship];
             }
             else
@@ -456,12 +459,13 @@ namespace BattleShipCS
             //assign a random value to the boat position. If there are no boats, but if there is, we recurse through and recall the function. 
             Random boatPosition = new Random();
             int ship = boatPosition.Next(0, positionsAvailable.Count - 10);
-            if (computerShots[ship] != "b")
+            if (computerShots[ship] != "b" && computerShots[ship + 10] != "b")
             {
                 computerBoard[ship].Image = Properties.Resources.boatTop;
                 computerShots[ship] = "b";
                 computerBoard[ship + 10].Image = Properties.Resources.boatBottom;
                 computerShots[ship + 10] = "b";
+                HideComputerBoats(ship, Position.Vertical);
 
                 return positionsAvailable[ship];
             }
@@ -470,8 +474,24 @@ namespace BattleShipCS
                 return AssignBoatsVertical();
             }
         }
+        //hides the computer's position for play
+        public void HideComputerBoats(int index, Position position)
+        {
+            if (position == Position.Vertical)
+            {
+                computerBoard[index].Image = Properties.Resources.water;
+                computerBoard[index + 10].Image = Properties.Resources.water;
+            }
+            else if (position == Position.Horizontal)
+            {
+                computerBoard[index].Image = Properties.Resources.water;
+                computerBoard[index + 1].Image = Properties.Resources.water;
+            }
 
-        public void RemovePosition(int ship)
+        }
+
+
+        /*public void RemovePosition(int ship)
         {
             positionsAvailable.Remove(ship);
             positionsAvailable.Remove(ship + 1);
@@ -480,7 +500,7 @@ namespace BattleShipCS
         public void ReturnPosition(int boat)
         {
             positionsAvailable.Add(boat);
-        }
+        }*/
 
     }
 }
